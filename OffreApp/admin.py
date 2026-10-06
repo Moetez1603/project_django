@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from .models import Expedition
+from .models import Offre
 
 
-@admin.register(Expedition)
+@admin.register(Offre)
 class OffreAdmin(admin.ModelAdmin):
-    list_display = ('reference', 'chargeur', 'ville_depart', 'ville_arrivee', 'statut', 'created_at')
-    list_filter = ('statut',)
-    search_fields = ('reference', 'chargeur__raison_sociale', 'ville_depart', 'ville_arrivee')
+    list_display = ('expedition', 'transporteur', 'prix', 'delai_jours', 'statut', 'created_at')
+    list_filter = ('statut', 'expedition__statut')
+    search_fields = ('expedition__reference', 'transporteur__raison_sociale')
