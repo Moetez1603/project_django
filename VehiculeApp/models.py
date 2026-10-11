@@ -6,37 +6,40 @@ from EntrepriseApp.models import Entreprise
 
 
 class Vehicule(models.Model):
-    immatriculation = models.CharField(max_length=11, unique=True)
-    capacite_kg = models.IntegerField(
+    TYPE_VEHICULE_CHOICES = [
+        ('camionnette', 'Camionnette'),
+        ('fourgon', 'Fourgon'),
+        ('camion porteur', 'Camion porteur'),
+        ('semi-remorque', 'Semi-remorque'),
+    ]
+
+    immatriculation = models.CharField(max_length=20, unique=True)
+    capacite_kg = models.PositiveIntegerField(
         validators=[MinValueValidator(100, 'Capacité doit être supérieure à 100 kg.')]
     )
-    disponibilite = models.BooleanField(default=True)
+    disponible = models.BooleanField(default=True)
     type_vehicule = models.CharField(
         max_length=50,
-        choices=[
-            ('camionnette', 'Camionnette'),
-            ('fourgon', 'Fourgon'),
-            ('camion porteur', 'Camion porteur'),
-            ('semi remorque', 'Semi remorque'),
-        ],
+        choices=TYPE_VEHICULE_CHOICES,
         default='camionnette',
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    proprietaire = models.ForeignKey(
+    entreprise = models.ForeignKey(
         Entreprise,
         on_delete=models.CASCADE,
         related_name='vehicules',
+        limit_choices_to={'type_entreprise': 'transporteur'},
     )
 
     def __str__(self):
-        return f'{self.type_vehicule} ({self.immatriculation})'
+        return f'{self.get_type_vehicule_display()} ({self.immatriculation})'
 
     def clean(self):
         super().clean()
-        if self.proprietaire_id and self.proprietaire.type_entreprise != 'transporteur':
+        if self.entreprise_id and self.entreprise.type_entreprise != 'transporteur':
             raise ValidationError({
-                'proprietaire': 'Un véhicule doit appartenir à un transporteur.'
+                'entreprise': 'Un véhicule doit appartenir à une entreprise de type transporteur.'
             })
 
     def save(self, *args, **kwargs):

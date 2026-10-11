@@ -1,6 +1,7 @@
-from django.contrib.auth.models import AbstractUser
+import uuid
+from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
 from django.core.exceptions import ValidationError
-from django.core.validators import MaxLengthValidator, MinLengthValidator, RegexValidator
+from django.core.validators import RegexValidator
 from django.db import models
 
 
@@ -10,15 +11,30 @@ matricule_fiscal_validator = RegexValidator(
 )
 
 
-def validate_email(value):
-    if not value:
-        raise ValidationError("L'adresse e-mail est obligatoire.")
-    if not value.endswith('@gmail.com'):
-        raise ValidationError('Format invalide.')
+def generate_user_id():
+    return f'U{uuid.uuid4().hex[:7].upper()}'
+
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, username, email=None, password=None, **extra_fields):
+        if not extra_fields.get('user_id'):
+            extra_fields['user_id'] = generate_user_id()
+        return super().create_user(username, email, password, **extra_fields)
+
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        if not extra_fields.get('user_id'):
+            extra_fields['user_id'] = generate_user_id()
+        extra_fields.setdefault('role', 'admin')
+        return super().create_superuser(username, email, password, **extra_fields)
 
 
 class Utilisateur(AbstractUser):
-    user_id = models.CharField(max_length=8, primary_key=True)
+    user_id = models.CharField(
+        max_length=8,
+        primary_key=True,
+        default=generate_user_id,
+        editable=False,
+    )
     email = models.EmailField(unique=True, null=False, blank=False)
     telephone = models.CharField(max_length=15, null=True, blank=True)
     role = models.CharField(
@@ -29,20 +45,23 @@ class Utilisateur(AbstractUser):
             ('transporteur', 'Transporteur'),
         ],
     )
-    adresse = models.TextField(
-        validators=[
-            MinLengthValidator(20, "L'adresse doit contenir au moins 20 caractères."),
-            MaxLengthValidator(300, "L'adresse ne doit pas dépasser 300 caractères."),
-        ]
-    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return f'{self.username} ({self.role})'
+
 
 class Entreprise(models.Model):
     raison_sociale = models.CharField(max_length=255, null=False, blank=False)
-    matricule_fiscale = models.CharField(max_length=17, unique=True)
+    matricule_fiscal = models.CharField(
+        max_length=17,
+        unique=True,
+        validators=[matricule_fiscal_validator],
+    )
     type_entreprise = models.CharField(
         max_length=100,
         choices=[
@@ -56,8 +75,11 @@ class Entreprise(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    gerant = models.OneToOneField(
+    utilisateur = models.OneToOneField(
         Utilisateur,
         on_delete=models.CASCADE,
         related_name='entreprise',
     )
+
+    def __str__(self):
+        return self.raison_sociale
