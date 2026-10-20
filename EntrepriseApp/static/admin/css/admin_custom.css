@@ -1,0 +1,199 @@
+:root,
+html[data-theme="light"] {
+    --primary: #79aec8;
+    --secondary: #417690;
+    --accent: #dcebf3;
+    --primary-fg: #fff;
+    --body-bg: #fff;
+    --body-fg: #40586d;
+    --body-quiet-color: #71879a;
+    --body-medium-color: #526b80;
+    --body-loud-color: #304b61;
+    --darkened-bg: #f4f8fb;
+    --header-bg: #417690;
+    --header-color: #fff;
+    --header-branding-color: #fff;
+    --header-link-color: #fff;
+    --breadcrumbs-bg: #e8f1f6;
+    --breadcrumbs-fg: #526f83;
+    --breadcrumbs-link-fg: #356580;
+    --link-fg: #417690;
+    --link-hover-color: #2f5f79;
+    --link-selected-fg: #356580;
+    --button-bg: #548ba7;
+    --button-hover-bg: #417690;
+    --default-button-bg: #417690;
+    --default-button-hover-bg: #315f78;
+    --selected-row: #eaf3f8;
+    --admin-heading-bg: linear-gradient(100deg, #e5f0f6, #f4f8fb);
+    --admin-heading-fg: #355f78;
+}
+
+#header {
+    background: linear-gradient(110deg, #417690, #6f9fb8);
+    box-shadow: 0 1px 4px rgb(49 95 120 / 16%);
+}
+
+#branding h1,
+#branding h1 a:link,
+#branding h1 a:visited {
+    color: #fff;
+}
+
+.module h2,
+.module caption,
+.inline-group h2,
+#changelist-filter h2 {
+    background: var(--admin-heading-bg);
+    color: var(--admin-heading-fg);
+}
+
+#nav-sidebar .module th,
+#nav-sidebar .module caption {
+    background: var(--admin-heading-bg);
+    color: var(--admin-heading-fg);
+}
+
+#nav-sidebar a.section:link,
+#nav-sidebar a.section:visited {
+    color: var(--admin-heading-fg);
+}
+
+.module {
+    border: 1px solid #dce8ef;
+}
+
+#changelist-filter,
+.submit-row {
+    background-color: #f4f8fb;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.status-badge--expedition-publiee,
+.status-badge--offre-proposee {
+    color: #315f78;
+    background-color: #e8f1f6;
+    border-color: #c9dce8;
+}
+
+.status-badge--expedition-attribuee,
+.status-badge--offre-acceptee {
+    color: #355f78;
+    background-color: #dcebf3;
+    border-color: #b7d1e0;
+}
+
+.status-badge--expedition-en-cours,
+.status-badge--offre-retiree {
+    color: #705a2e;
+    background-color: #f5f0e3;
+    border-color: #e8ddc1;
+}
+
+.status-badge--expedition-livree {
+    color: #315f58;
+    background-color: #e5f1ed;
+    border-color: #c3ddd4;
+}
+
+.status-badge--expedition-annulee,
+.status-badge--offre-refusee {
+    color: #76504f;
+    background-color: #f4e9e8;
+    border-color: #e5cfcd;
+}
+
+.status-badge--offre-retiree,
+.status-badge--inconnu {
+    color: #526b80;
+    background-color: #edf1f4;
+    border-color: #d6e0e7;
+}
+
+ul.messagelist li,
+ul.messagelist li.debug,
+ul.messagelist li.info,
+ul.messagelist li.success,
+ul.messagelist li.warning,
+ul.messagelist li.error {
+    padding: 6px 0;
+    margin: 0 0 6px;
+    color: var(--body-fg);
+    background: transparent;
+}
+
+thead th,
+tfoot td {
+    background-color: #f4f8fb;
+    color: #526f83;
+}
+
+#changelist table thead th a:link,
+#changelist table thead th a:visited,
+#changelist table thead th a:hover,
+#changelist table thead th a:active,
+#changelist table thead th a:focus {
+    background-color: transparent;
+    color: #356580;
+}
+
+#changelist table thead th a:focus-visible {
+    outline: 2px solid #79aec8;
+    outline-offset: 2px;
+}
+
+.paginator a:not(.showall) {
+    background-image: linear-gradient(110deg, #548ba7, #417690);
+}
+
+input:not([type]),
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select,
+.vTextField {
+    background-color: #fff;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+caption,
+th,
+legend {
+    color: #405f77;
+}
+
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+    border-radius: 4px;
+    background-image: linear-gradient(110deg, #548ba7, #417690);
+    border-color: #417690;
+}
+
+.button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+.submit-row input:hover,
+a.button:hover {
+    background-image: linear-gradient(110deg, #477c98, #356780);
+}

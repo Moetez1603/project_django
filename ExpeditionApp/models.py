@@ -5,7 +5,6 @@ from django.utils import timezone
 
 from EntrepriseApp.models import Entreprise
 
-
 class Expedition(models.Model):
     STATUT_CHOICES = [
         ('publiee', 'Publiée'),

@@ -1,0 +1,27 @@
+{% extends "admin/base_site.html" %}
+{% load static admin_filters %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'admin/css/dashboard.css' %}">{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block nav-breadcrumbs %}{% endblock %}
+
+{% block nav-sidebar %}{% endblock %}
+
+{% block content %}
+  <div id="content-main" class="app-list">
+    <div class="module">
+      <table>
+        <tr>
+          <th scope="row">
+            <a href="{% url 'admin:health_check' %}">Ouvrir le contrôle d’intégrité</a>
+          </th>
+        </tr>
+      </table>
+    </div>
+    {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+  </div>
+{% endblock %}

@@ -56,3 +56,20 @@ Branche : `jalon-1`
   - `Offre.vehicule` : Clé étrangère rendue obligatoire (`null=False`), avec validation dans `clean()` vérifiant que le véhicule appartient bien au transporteur soumettant l'offre et qu'il est disponible (`disponible=True`).
   - Ajout systématique de `created_at` (`DateTimeField(auto_now_add=True)`) et `updated_at` (`DateTimeField(auto_now=True)`) sur l'entité `Offre`.
   - Harmonisation stricte de l'ensemble des relations et noms d'attributs de tous les modèles avec le diagramme UML (Figure 1).
+
+---
+
+## Entrée [2026-10-20]
+- **Outil IA utilisé :** Copilot
+- **Prompt (résumé) :**
+  > "Continue l'implémentation du TP sur l'administration Django et le tableau de bord de contrôle d'intégrité."
+- **Sortie obtenue (résumé) :**
+  Ajout d'un tableau de bord d'intégrité avec cinq contrôles ORM et export CSV des résultats, d'une action groupée de clôture des expéditions, de badges de statut, d'un inline des offres dans une expédition, de l'export CSV des offres et de la lecture seule conditionnelle pour les offres acceptées.
+- **Écarts identifiés et corrections :**
+  - Le tableau de bord initial devait être lié au site admin personnalisé ; une configuration AdminSite dédiée et un lien depuis l'index ont été ajoutés.
+  - L'action groupée de clôture doit conserver les validations des modèles ; elle appelle `save()` individuellement au lieu d'utiliser `QuerySet.update()`.
+  - Les statuts d'offres acceptées ne doivent pas permettre de modifier le prix ou le délai dans la fiche d'administration ; `get_readonly_fields()` applique cette règle.
+- **Justifications :**
+  - Les cinq contrôles agrègent ou listent les anomalies et fournissent des liens directs vers les objets concernés.
+  - Les tests vérifient l'accès protégé au tableau de bord, son export CSV, l'exécution de l'action de clôture, l'export des offres et les réglages de l'administration.
+  - La base de démonstration n'a pas été réinitialisée ni modifiée pour rédiger le rapport ; les résultats consignés correspondent aux données locales observées le 20 octobre 2026.

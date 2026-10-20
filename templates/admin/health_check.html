@@ -1,0 +1,39 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div id="content-main">
+    <p>
+      Ce tableau de bord recherche cinq incohérences métier à partir des données actuelles.
+      Total des anomalies trouvées : <strong>{{ total_anomalies }}</strong>.
+    </p>
+    <p><a class="button" href="?format=csv">Télécharger le résultat en CSV</a></p>
+
+    {% for check in checks %}
+      <div class="module">
+        <h2>{{ check.title }} <span>({{ check.count }})</span></h2>
+        <p>{{ check.rule }}</p>
+        {% if check.entries %}
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Élément concerné</th>
+                <th scope="col">Détail</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for entry in check.entries %}
+                <tr>
+                  <th scope="row"><a href="{{ entry.url }}">{{ entry.label }}</a></th>
+                  <td>{{ entry.detail }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>Aucune anomalie détectée.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
