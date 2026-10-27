@@ -82,6 +82,30 @@ class ExpeditionAdminActionTests(TestCase):
             for _ in range(2)
         ]
 
+    def test_admin_can_create_an_expedition_and_generate_its_reference(self):
+        self.client.force_login(self.admin_user)
+
+        response = self.client.post('/admin/ExpeditionApp/expedition/add/', {
+            'ville_depart': 'Sousse',
+            'ville_arrivee': 'Monastir',
+            'description': 'Test de création',
+            'poids_kg': '75.50',
+            'date_souhaitee': '2026-11-15',
+            'statut': 'publiee',
+            'entreprise': str(self.company.pk),
+            'offres-TOTAL_FORMS': '0',
+            'offres-INITIAL_FORMS': '0',
+            'offres-MIN_NUM_FORMS': '0',
+            'offres-MAX_NUM_FORMS': '1000',
+            '_save': 'Enregistrer',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        expedition = Expedition.objects.get(ville_depart='Sousse')
+        self.assertEqual(expedition.ville_arrivee, 'Monastir')
+        self.assertEqual(expedition.poids_kg, 75.50)
+        self.assertTrue(expedition.reference.startswith('EXP_'))
+
     def test_cloturer_action_marks_selected_expeditions_as_delivered(self):
         self.client.force_login(self.admin_user)
 
@@ -110,3 +134,86 @@ class ExpeditionAdminActionTests(TestCase):
         model_admin = admin.site._registry[Expedition]
 
         self.assertIn('cloturer_expeditions', model_admin.actions)
+
+    def test_expedition_list_page_displays_saved_expeditions(self):
+        response = self.client.get('/expedition/list-expeditions/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'expedition/list.html')
+        self.assertContains(response, self.expeditions[0].reference)
+        self.assertContains(response, 'Tunis')
+        self.assertContains(response, 'Sfax')
+        self.assertContains(response, 'Chargeur Test')
+        self.assertContains(
+            response,
+            f'<a href="/details/{self.expeditions[0].pk}/">{self.expeditions[0].reference}</a>',
+            html=True,
+        )
+
+    def test_expedition_list_shows_delete_button_only_to_staff(self):
+        response = self.client.get('/expedition/list-expeditions/')
+        self.assertNotContains(response, 'Supprimer')
+
+        self.client.force_login(self.admin_user)
+        response = self.client.get('/expedition/list-expeditions/')
+        self.assertContains(response, 'Supprimer')
+        self.assertContains(response, 'csrfmiddlewaretoken')
+
+    def test_staff_can_delete_expedition_from_list(self):
+        expedition = self.expeditions[0]
+        self.client.force_login(self.admin_user)
+
+        response = self.client.post(f'/expedition/delete/{expedition.pk}/', follow=True)
+
+        self.assertRedirects(response, '/expedition/list-expeditions/')
+        self.assertFalse(Expedition.objects.filter(pk=expedition.pk).exists())
+        self.assertContains(response, f"L’expédition {expedition.reference} a été supprimée.")
+
+    def test_get_request_cannot_delete_expedition(self):
+        expedition = self.expeditions[0]
+        self.client.force_login(self.admin_user)
+
+        response = self.client.get(f'/expedition/delete/{expedition.pk}/')
+
+        self.assertEqual(response.status_code, 405)
+        self.assertTrue(Expedition.objects.filter(pk=expedition.pk).exists())
+
+    def test_non_staff_cannot_delete_expedition(self):
+        expedition = self.expeditions[0]
+        self.client.logout()
+
+        response = self.client.post(f'/expedition/delete/{expedition.pk}/')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Expedition.objects.filter(pk=expedition.pk).exists())
+
+    def test_expedition_details_page_displays_saved_expedition(self):
+        expedition = self.expeditions[0]
+
+        response = self.client.get(f'/details/{expedition.pk}/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'expedition/detail.html')
+        self.assertContains(response, expedition.reference)
+        self.assertContains(response, 'Tunis')
+        self.assertContains(response, 'Sfax')
+
+    def test_expedition_details_page_is_also_available_under_expedition_prefix(self):
+        expedition = self.expeditions[0]
+
+        response = self.client.get(f'/expedition/details/{expedition.pk}/')
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_expedition_details_page_returns_404_for_unknown_id(self):
+        response = self.client.get('/details/999999/')
+
+        self.assertEqual(response.status_code, 404)
+
+
+class ExpeditionUrlTests(TestCase):
+    def test_welcome_page_displays_the_name_from_the_url(self):
+        response = self.client.get('/expedition/welcome/Moetez/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Hello Moetez')

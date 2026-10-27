@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Liste des expéditions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem auto;
+            max-width: 1100px;
+            padding: 0 1rem;
+        }
+
+        h1 {
+            color: #17324d;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #d5dce3;
+            padding: 0.7rem;
+            text-align: left;
+        }
+
+        th {
+            background: #edf2f7;
+        }
+
+        .empty {
+            color: #555;
+            padding: 1rem 0;
+        }
+
+        .delete-button {
+            background: #b42318;
+            border: 0;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Liste des expéditions</h1>
+    <p>{{ expeditions|length }} expédition(s)</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Référence</th>
+                <th>Départ</th>
+                <th>Arrivée</th>
+                <th>Poids (kg)</th>
+                <th>Date souhaitée</th>
+                <th>Statut</th>
+                <th>Entreprise</th>
+                <th>Détails</th>
+                {% if user.is_staff %}
+                    <th>Suppression</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for expedition in expeditions %}
+                <tr>
+                    <td>
+                        <a href="{% url 'detail_expedition_short' expedition.pk %}">{{ expedition.reference }}</a>
+                    </td>
+                    <td>{{ expedition.ville_depart }}</td>
+                    <td>{{ expedition.ville_arrivee }}</td>
+                    <td>{{ expedition.poids_kg }}</td>
+                    <td>{{ expedition.date_souhaitee|date:"d/m/Y" }}</td>
+                    <td>{{ expedition.get_statut_display }}</td>
+                    <td>{{ expedition.entreprise.raison_sociale }}</td>
+                    <td>
+                        <a href="{% url 'detail_expedition_short' expedition.pk %}">Voir</a>
+                    </td>
+                    {% if user.is_staff %}
+                        <td>
+                            <form method="post" action="{% url 'delete_expedition' expedition.pk %}"
+                                  onsubmit="return confirm('Supprimer cette expédition ?');">
+                                {% csrf_token %}
+                                <button class="delete-button" type="submit">Supprimer</button>
+                            </form>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="{% if user.is_staff %}9{% else %}8{% endif %}" class="empty">
+                        Aucune expédition n’a encore été enregistrée.
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

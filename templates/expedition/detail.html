@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Détail de l’expédition {{ expedition.reference }}</title>
+    <style>
+        body {
+            background: #f4f7fa;
+            color: #263445;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+
+        main {
+            background: #fff;
+            border: 1px solid #d5dce3;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgb(23 50 77 / 8%);
+            margin: 0 auto;
+            max-width: 850px;
+            overflow: hidden;
+        }
+
+        .page-header {
+            background: #17324d;
+            color: #fff;
+            padding: 1.5rem 2rem;
+        }
+
+        .page-header h1 {
+            margin: 0 0 0.4rem;
+        }
+
+        .reference {
+            color: #d7e6f4;
+            margin: 0;
+        }
+
+        .details {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            padding: 2rem;
+        }
+
+        .detail-item {
+            background: #edf2f7;
+            border-left: 4px solid #557b9e;
+            border-radius: 5px;
+            margin: 0;
+            padding: 0.9rem 1rem;
+        }
+
+        dt {
+            color: #526579;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        dd {
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .status {
+            background: #dcefe4;
+            border-radius: 999px;
+            color: #21613a;
+            display: inline-block;
+            font-weight: 700;
+            padding: 0.35rem 0.75rem;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+        }
+
+        .actions {
+            border-top: 1px solid #d5dce3;
+            padding: 1.25rem 2rem;
+        }
+
+        .back-link {
+            background: #17324d;
+            border-radius: 5px;
+            color: #fff;
+            display: inline-block;
+            padding: 0.7rem 1rem;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            background: #274c6d;
+        }
+
+        @media (max-width: 520px) {
+            .page-header,
+            .details,
+            .actions {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header class="page-header">
+            <h1>Détail de l’expédition</h1>
+            <p class="reference">{{ expedition.reference }}</p>
+        </header>
+
+        <dl class="details">
+            <div class="detail-item">
+                <dt>Ville de départ</dt>
+                <dd>{{ expedition.ville_depart }}</dd>
+            </div>
+            <div class="detail-item">
+                <dt>Ville d’arrivée</dt>
+                <dd>{{ expedition.ville_arrivee }}</dd>
+            </div>
+            <div class="detail-item">
+                <dt>Poids</dt>
+                <dd>{{ expedition.poids_kg }} kg</dd>
+            </div>
+            <div class="detail-item">
+                <dt>Date souhaitée</dt>
+                <dd>{{ expedition.date_souhaitee|date:"d/m/Y" }}</dd>
+            </div>
+            <div class="detail-item">
+                <dt>Statut</dt>
+                <dd><span class="status">{{ expedition.get_statut_display }}</span></dd>
+            </div>
+            <div class="detail-item">
+                <dt>Entreprise</dt>
+                <dd>{{ expedition.entreprise.raison_sociale }}</dd>
+            </div>
+            <div class="detail-item description">
+                <dt>Description</dt>
+                <dd>{{ expedition.description|default:"Aucune description."|linebreaksbr }}</dd>
+            </div>
+        </dl>
+
+        <footer class="actions">
+            <a class="back-link" href="{% url 'list_expeditions' %}">Retour à la liste</a>
+        </footer>
+    </main>
+</body>
+</html>
