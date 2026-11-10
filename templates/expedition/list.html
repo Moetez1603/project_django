@@ -5,15 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Liste des expéditions</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 2rem auto;
-            max-width: 1100px;
-            padding: 0 1rem;
+        * {
+            box-sizing: border-box;
         }
 
-        h1 {
-            color: #17324d;
+        body {
+            background: #f4f7fa;
+            color: #263445;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+
+        main {
+            background: #fff;
+            border: 1px solid #d5dce3;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgb(23 50 77 / 8%);
+            margin: 0 auto;
+            max-width: 1200px;
+            overflow: hidden;
+        }
+
+        .page-header {
+            align-items: center;
+            background: #17324d;
+            color: #fff;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+        }
+
+        .page-header h1 {
+            margin: 0;
+        }
+
+        .count {
+            background: #274c6d;
+            border-radius: 999px;
+            color: #fff;
+            margin: 0;
+            padding: 0.5rem 0.85rem;
+        }
+
+        .content {
+            padding: 1.5rem 2rem 2rem;
+        }
+
+        .add-button,
+        .edit-button {
+            background: #315f84;
+            border-radius: 4px;
+            color: #fff;
+            display: inline-block;
+            padding: 0.55rem 0.8rem;
+            text-decoration: none;
+        }
+
+        .add-button {
+            background: #21613a;
+            margin-bottom: 1rem;
+        }
+
+        .add-button:hover {
+            background: #174b2b;
+            color: #fff;
+        }
+
+        .edit-button:hover {
+            background: #17324d;
+            color: #fff;
+        }
+
+        .messages {
+            background: #dcefe4;
+            border-left: 4px solid #3b8a58;
+            border-radius: 5px;
+            color: #21613a;
+            margin: 0 0 1rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
         }
 
         table {
@@ -22,18 +98,39 @@
         }
 
         th, td {
-            border: 1px solid #d5dce3;
+            border-bottom: 1px solid #d5dce3;
             padding: 0.7rem;
             text-align: left;
+            white-space: nowrap;
         }
 
         th {
             background: #edf2f7;
+            color: #17324d;
+            font-size: 0.9rem;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        tbody tr:hover {
+            background: #edf4fa;
+        }
+
+        a {
+            color: #315f84;
+            font-weight: 700;
+        }
+
+        a:hover {
+            color: #17324d;
         }
 
         .empty {
             color: #555;
             padding: 1rem 0;
+            text-align: center;
         }
 
         .delete-button {
@@ -44,67 +141,94 @@
             cursor: pointer;
             padding: 0.5rem 0.75rem;
         }
+
+        .actions {
+            align-items: center;
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .actions form {
+            margin: 0;
+        }
+
+        .delete-button:hover {
+            background: #8f1c13;
+        }
+
+        @media (max-width: 600px) {
+            .page-header,
+            .content {
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Liste des expéditions</h1>
-    <p>{{ expeditions|length }} expédition(s)</p>
+    <main>
+        <header class="page-header">
+            <h1>Liste des expéditions</h1>
+            <p class="count">{{ expeditions|length }} expédition(s)</p>
+        </header>
 
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
+        <section class="content">
+            <a class="add-button" href="{% url 'expedition_create' %}">Ajouter une expédition</a>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Référence</th>
-                <th>Départ</th>
-                <th>Arrivée</th>
-                <th>Poids (kg)</th>
-                <th>Date souhaitée</th>
-                <th>Statut</th>
-                <th>Entreprise</th>
-                <th>Détails</th>
-                {% if user.is_staff %}
-                    <th>Suppression</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for expedition in expeditions %}
-                <tr>
-                    <td>
-                        <a href="{% url 'detail_expedition_short' expedition.pk %}">{{ expedition.reference }}</a>
-                    </td>
-                    <td>{{ expedition.ville_depart }}</td>
-                    <td>{{ expedition.ville_arrivee }}</td>
-                    <td>{{ expedition.poids_kg }}</td>
-                    <td>{{ expedition.date_souhaitee|date:"d/m/Y" }}</td>
-                    <td>{{ expedition.get_statut_display }}</td>
-                    <td>{{ expedition.entreprise.raison_sociale }}</td>
-                    <td>
-                        <a href="{% url 'detail_expedition_short' expedition.pk %}">Voir</a>
-                    </td>
-                    {% if user.is_staff %}
-                        <td>
-                            <form method="post" action="{% url 'delete_expedition' expedition.pk %}"
-                                  onsubmit="return confirm('Supprimer cette expédition ?');">
-                                {% csrf_token %}
-                                <button class="delete-button" type="submit">Supprimer</button>
-                            </form>
-                        </td>
-                    {% endif %}
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="{% if user.is_staff %}9{% else %}8{% endif %}" class="empty">
-                        Aucune expédition n’a encore été enregistrée.
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="messages">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Référence</th>
+                            <th>Départ</th>
+                            <th>Arrivée</th>
+                            <th>Poids (kg)</th>
+                            <th>Date souhaitée</th>
+                            <th>Statut</th>
+                            <th>Entreprise</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for expedition in expeditions %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'detail_expedition_short' expedition.pk %}">{{ expedition.reference }}</a>
+                                </td>
+                                <td>{{ expedition.ville_depart }}</td>
+                                <td>{{ expedition.ville_arrivee }}</td>
+                                <td>{{ expedition.poids_kg }}</td>
+                                <td>{{ expedition.date_souhaitee|date:"d/m/Y" }}</td>
+                                <td>{{ expedition.get_statut_display }}</td>
+                                <td>{{ expedition.entreprise.raison_sociale }}</td>
+                                <td class="actions">
+                                    <a href="{% url 'detail_expedition_short' expedition.pk %}">Voir</a>
+                                    {% if user.is_staff %}
+                                        <a class="edit-button" href="{% url 'expedition_update' expedition.pk %}">Modifier</a>
+                                        <form method="post" action="{% url 'delete_expedition' expedition.pk %}"
+                                              onsubmit="return confirm('Supprimer cette expédition ?');">
+                                            {% csrf_token %}
+                                            <button class="delete-button" type="submit">Supprimer</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="8" class="empty">
+                                    Aucune expédition n’a encore été enregistrée.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 </body>
 </html>

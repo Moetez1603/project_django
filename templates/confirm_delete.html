@@ -1,0 +1,10 @@
+<p>
+    Êtes-vous sûr de vouloir supprimer cette expédition{{ expedition.reference }} ?
+
+</p>
+
+<form method="post" action="{% url 'expedition_delete' expedition.pk %}">
+    {% csrf_token %}
+    <button type="submit">Supprimer</button>
+    <a href="{% url 'expedition_detail' expedition.pk %}">Annuler</a>
+</form>
