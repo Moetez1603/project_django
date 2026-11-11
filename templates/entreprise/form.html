@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if object %}Modifier{% else %}Créer{% endif %} une entreprise</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background: #f4f7fa;
+            color: #263445;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+        main {
+            background: #fff;
+            border: 1px solid #d5dce3;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgb(23 50 77 / 8%);
+            margin: 0 auto;
+            max-width: 760px;
+            overflow: hidden;
+        }
+        .page-header { background: #17324d; color: #fff; padding: 1.5rem 2rem; }
+        .page-header h1 { margin: 0 0 0.4rem; }
+        .page-header p { color: #d7e6f4; margin: 0; }
+        form { padding: 1.5rem 2rem 2rem; }
+        form p { margin: 0 0 1.1rem; }
+        label {
+            color: #17324d;
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.45rem;
+        }
+        input, select, textarea {
+            background: #fff;
+            border: 1px solid #b8c5d1;
+            border-radius: 5px;
+            color: #263445;
+            font: inherit;
+            max-width: 100%;
+            padding: 0.7rem 0.8rem;
+            width: 100%;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #315f84;
+            box-shadow: 0 0 0 3px rgb(49 95 132 / 16%);
+            outline: none;
+        }
+        .helptext { color: #627386; display: block; font-size: 0.875rem; margin-top: 0.35rem; }
+        .errorlist { color: #b42318; margin: 0 0 0.4rem; padding-left: 1.2rem; }
+        .form-actions {
+            border-top: 1px solid #d5dce3;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+        }
+        .button {
+            border: 0;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            font: inherit;
+            font-weight: 700;
+            padding: 0.7rem 1rem;
+            text-decoration: none;
+        }
+        .submit-button { background: #21613a; color: #fff; }
+        .submit-button:hover { background: #174b2b; }
+        .cancel-button { background: #edf2f7; color: #17324d; }
+        .cancel-button:hover { background: #dce5ed; }
+        @media (max-width: 520px) {
+            .page-header, form { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header class="page-header">
+            <h1>{% if object %}Modifier l’entreprise{% else %}Créer une entreprise{% endif %}</h1>
+            {% if object %}
+                <p>{{ object.raison_sociale }}</p>
+            {% else %}
+                <p>Renseignez les informations de l’entreprise.</p>
+            {% endif %}
+        </header>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button class="button submit-button" type="submit">
+                    {% if object %}Enregistrer les modifications{% else %}Créer l’entreprise{% endif %}
+                </button>
+                <a class="button cancel-button" href="{% url 'entreprise_list' %}">Annuler</a>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

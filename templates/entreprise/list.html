@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Liste des entreprises</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background: #f4f7fa;
+            color: #263445;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+        main {
+            background: #fff;
+            border: 1px solid #d5dce3;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgb(23 50 77 / 8%);
+            margin: 0 auto;
+            max-width: 1200px;
+            overflow: hidden;
+        }
+        .page-header {
+            align-items: center;
+            background: #17324d;
+            color: #fff;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+        }
+        .page-header h1 { margin: 0; }
+        .count {
+            background: #274c6d;
+            border-radius: 999px;
+            color: #fff;
+            margin: 0;
+            padding: 0.5rem 0.85rem;
+        }
+        .content { padding: 1.5rem 2rem 2rem; }
+        .add-button, .edit-button, .delete-button {
+            border: 0;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            display: inline-block;
+            font: inherit;
+            font-weight: 700;
+            padding: 0.55rem 0.8rem;
+            text-decoration: none;
+        }
+        .add-button { background: #21613a; margin-bottom: 1rem; }
+        .add-button:hover { background: #174b2b; color: #fff; }
+        .edit-button { background: #315f84; }
+        .edit-button:hover { background: #17324d; color: #fff; }
+        .delete-button { background: #b42318; }
+        .delete-button:hover { background: #8f1c13; }
+        .table-wrapper { overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td {
+            border-bottom: 1px solid #d5dce3;
+            padding: 0.7rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+        th { background: #edf2f7; color: #17324d; font-size: 0.9rem; }
+        tbody tr:nth-child(even) { background: #f8fafc; }
+        tbody tr:hover { background: #edf4fa; }
+        td a:not(.edit-button) { color: #315f84; font-weight: 700; }
+        td a:not(.edit-button):hover { color: #17324d; }
+        .actions { align-items: center; display: flex; gap: 0.6rem; }
+        .actions form { margin: 0; }
+        .empty { color: #555; padding: 1rem 0; text-align: center; }
+        @media (max-width: 600px) {
+            .page-header, .content { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header class="page-header">
+            <h1>Liste des entreprises</h1>
+            <p class="count">{{ entreprises|length }} entreprise(s)</p>
+        </header>
+        <section class="content">
+            <a class="add-button" href="{% url 'entreprise_create' %}">Ajouter une entreprise</a>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Raison sociale</th>
+                            <th>Matricule fiscal</th>
+                            <th>Type</th>
+                            <th>Adresse</th>
+                            <th>Utilisateur</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entreprise in entreprises %}
+                            <tr>
+                                <td><a href="{% url 'entreprise_detail' entreprise.pk %}">{{ entreprise.raison_sociale }}</a></td>
+                                <td>{{ entreprise.matricule_fiscal }}</td>
+                                <td>{{ entreprise.get_type_entreprise_display }}</td>
+                                <td>{{ entreprise.adresse|truncatechars:50 }}</td>
+                                <td>{{ entreprise.utilisateur.username }}</td>
+                                <td class="actions">
+                                    <a href="{% url 'entreprise_detail' entreprise.pk %}">Voir</a>
+                                    {% if user.is_staff %}
+                                        <a class="edit-button" href="{% url 'entreprise_update' entreprise.pk %}">Modifier</a>
+                                        <form method="post" action="{% url 'entreprise_delete' entreprise.pk %}"
+                                              onsubmit="return confirm('Supprimer cette entreprise et ses données liées ?');">
+                                            {% csrf_token %}
+                                            <button class="delete-button" type="submit">Supprimer</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="6" class="empty">Aucune entreprise n’a encore été enregistrée.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

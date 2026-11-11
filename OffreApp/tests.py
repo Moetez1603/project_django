@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
+from django.urls import reverse
 
 from EntrepriseApp.models import Entreprise
 from ExpeditionApp.models import Expedition
@@ -93,3 +94,52 @@ class OffreAdminTests(TestCase):
 
         self.assertContains(response, 'status-badge--offre-proposee')
         self.assertContains(response, 'Proposée')
+
+    def test_offer_list_and_detail_pages_render(self):
+        response = self.client.get(reverse('offre_list'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Ajouter une offre')
+        self.assertContains(response, self.transporteur.raison_sociale)
+
+        response = self.client.get(reverse('offre_detail', args=[self.offre.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.expedition.reference)
+
+    def test_offer_can_be_created_from_the_form(self):
+        response = self.client.post(reverse('offre_create'), {
+            'prix': '175.00',
+            'delai_jours': '3',
+            'statut': 'proposee',
+            'expedition': self.expedition.pk,
+            'transporteur': self.transporteur.pk,
+            'vehicule': self.vehicule.pk,
+        })
+
+        self.assertRedirects(response, reverse('offre_list'))
+        self.assertEqual(Offre.objects.count(), 2)
+
+    def test_staff_can_update_and_delete_an_offer(self):
+        self.client.force_login(self.admin_user)
+
+        response = self.client.post(
+            reverse('offre_update', args=[self.offre.pk]),
+            {
+                'prix': '200.00',
+                'delai_jours': '4',
+                'statut': 'proposee',
+                'expedition': self.expedition.pk,
+                'transporteur': self.transporteur.pk,
+                'vehicule': self.vehicule.pk,
+            },
+        )
+
+        self.assertRedirects(response, reverse('offre_list'))
+        self.offre.refresh_from_db()
+        self.assertEqual(str(self.offre.prix), '200.00')
+
+        response = self.client.post(reverse('offre_delete', args=[self.offre.pk]))
+
+        self.assertRedirects(response, reverse('offre_list'))
+        self.assertFalse(Offre.objects.filter(pk=self.offre.pk).exists())

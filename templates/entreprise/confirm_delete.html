@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Supprimer une entreprise</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            align-items: center;
+            background: #f4f7fa;
+            color: #263445;
+            display: flex;
+            font-family: Arial, sans-serif;
+            justify-content: center;
+            margin: 0;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        main {
+            background: #fff;
+            border: 1px solid #d5dce3;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgb(23 50 77 / 8%);
+            max-width: 560px;
+            overflow: hidden;
+            width: 100%;
+        }
+        header { background: #17324d; color: #fff; padding: 1.5rem; }
+        h1 { margin: 0; }
+        section { padding: 1.5rem; }
+        .warning {
+            background: #fff4e5;
+            border-left: 4px solid #b54708;
+            border-radius: 5px;
+            color: #7a2e0e;
+            padding: 0.8rem 1rem;
+        }
+        .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .button {
+            border: 0;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            font: inherit;
+            font-weight: 700;
+            padding: 0.7rem 1rem;
+            text-decoration: none;
+        }
+        .delete-button { background: #b42318; color: #fff; }
+        .delete-button:hover { background: #8f1c13; }
+        .cancel-button { background: #edf2f7; color: #17324d; }
+    </style>
+</head>
+<body>
+    <main>
+        <header><h1>Supprimer cette entreprise ?</h1></header>
+        <section>
+            <p>Confirmer la suppression de <strong>{{ object.raison_sociale }}</strong>.</p>
+            <p class="warning">
+                Cette opération supprimera également les véhicules et les expéditions liés,
+                ainsi que leurs offres. Le compte utilisateur associé ne sera pas supprimé.
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <div class="actions">
+                    <button class="button delete-button" type="submit">Supprimer</button>
+                    <a class="button cancel-button" href="{% url 'entreprise_detail' object.pk %}">Annuler</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

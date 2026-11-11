@@ -25,4 +25,7 @@ urlpatterns = [
     path('', home, name='root'),
     path('details/<int:pk>/', detail_expedition, name='detail_expedition_short'),
     path('expedition/', include('ExpeditionApp.urls')),
+    path('offre/', include('OffreApp.urls')),
+    path('vehicule/', include('VehiculeApp.urls')),
+    path('entreprise/', include('EntrepriseApp.urls')),
 ]

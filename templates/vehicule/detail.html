@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Détail du véhicule {{ vehicule.immatriculation }}</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background: #f4f7fa;
+            color: #263445;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+        main {
+            background: #fff;
+            border: 1px solid #d5dce3;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgb(23 50 77 / 8%);
+            margin: 0 auto;
+            max-width: 850px;
+            overflow: hidden;
+        }
+        .page-header { background: #17324d; color: #fff; padding: 1.5rem 2rem; }
+        .page-header h1 { margin: 0 0 0.4rem; }
+        .reference { color: #d7e6f4; margin: 0; }
+        .details {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            padding: 2rem;
+        }
+        .detail-item {
+            background: #edf2f7;
+            border-left: 4px solid #557b9e;
+            border-radius: 5px;
+            margin: 0;
+            padding: 0.9rem 1rem;
+        }
+        dt { color: #526579; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; }
+        dd { margin: 0; overflow-wrap: anywhere; }
+        .availability { font-weight: 700; }
+        .available { color: #21613a; }
+        .unavailable { color: #b42318; }
+        .actions {
+            align-items: center;
+            border-top: 1px solid #d5dce3;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding: 1.25rem 2rem;
+        }
+        .actions form { margin: 0; }
+        .button {
+            border: 0;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            font: inherit;
+            font-weight: 700;
+            padding: 0.7rem 1rem;
+            text-decoration: none;
+        }
+        .back-link { background: #17324d; color: #fff; }
+        .back-link:hover { background: #274c6d; }
+        .edit-button { background: #315f84; color: #fff; }
+        .edit-button:hover { background: #274c6d; }
+        .delete-button { background: #b42318; color: #fff; }
+        .delete-button:hover { background: #8f1c13; }
+        @media (max-width: 520px) {
+            .page-header, .details, .actions { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header class="page-header">
+            <h1>Détail du véhicule</h1>
+            <p class="reference">{{ vehicule.immatriculation }}</p>
+        </header>
+        <dl class="details">
+            <div class="detail-item"><dt>Type</dt><dd>{{ vehicule.get_type_vehicule_display }}</dd></div>
+            <div class="detail-item"><dt>Capacité</dt><dd>{{ vehicule.capacite_kg }} kg</dd></div>
+            <div class="detail-item">
+                <dt>Disponibilité</dt>
+                <dd>
+                    {% if vehicule.disponible %}
+                        <span class="availability available">Disponible</span>
+                    {% else %}
+                        <span class="availability unavailable">Indisponible</span>
+                    {% endif %}
+                </dd>
+            </div>
+            <div class="detail-item"><dt>Transporteur</dt><dd>{{ vehicule.entreprise.raison_sociale }}</dd></div>
+        </dl>
+        <footer class="actions">
+            <a class="button back-link" href="{% url 'vehicule_list' %}">Retour à la liste</a>
+            {% if user.is_staff %}
+                <a class="button edit-button" href="{% url 'vehicule_update' vehicule.pk %}">Modifier</a>
+                <form method="post" action="{% url 'vehicule_delete' vehicule.pk %}"
+                      onsubmit="return confirm('Supprimer ce véhicule ?');">
+                    {% csrf_token %}
+                    <button class="button delete-button" type="submit">Supprimer</button>
+                </form>
+            {% endif %}
+        </footer>
+    </main>
+</body>
+</html>

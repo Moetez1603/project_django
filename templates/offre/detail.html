@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Détail de l’offre n° {{ offre.pk }}</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background: #f4f7fa;
+            color: #263445;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+        main {
+            background: #fff;
+            border: 1px solid #d5dce3;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgb(23 50 77 / 8%);
+            margin: 0 auto;
+            max-width: 850px;
+            overflow: hidden;
+        }
+        .page-header { background: #17324d; color: #fff; padding: 1.5rem 2rem; }
+        .page-header h1 { margin: 0 0 0.4rem; }
+        .reference { color: #d7e6f4; margin: 0; }
+        .details {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            padding: 2rem;
+        }
+        .detail-item {
+            background: #edf2f7;
+            border-left: 4px solid #557b9e;
+            border-radius: 5px;
+            margin: 0;
+            padding: 0.9rem 1rem;
+        }
+        dt { color: #526579; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; }
+        dd { margin: 0; overflow-wrap: anywhere; }
+        .actions {
+            align-items: center;
+            border-top: 1px solid #d5dce3;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding: 1.25rem 2rem;
+        }
+        .actions form { margin: 0; }
+        .button {
+            border: 0;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            font: inherit;
+            font-weight: 700;
+            padding: 0.7rem 1rem;
+            text-decoration: none;
+        }
+        .back-link { background: #17324d; color: #fff; }
+        .back-link:hover { background: #274c6d; }
+        .edit-button { background: #315f84; color: #fff; }
+        .edit-button:hover { background: #274c6d; }
+        .delete-button { background: #b42318; color: #fff; }
+        .delete-button:hover { background: #8f1c13; }
+        @media (max-width: 520px) {
+            .page-header, .details, .actions { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header class="page-header">
+            <h1>Détail de l’offre</h1>
+            <p class="reference">Offre n° {{ offre.pk }}</p>
+        </header>
+        <dl class="details">
+            <div class="detail-item"><dt>Expédition</dt><dd>{{ offre.expedition.reference }} — {{ offre.expedition.ville_depart }} → {{ offre.expedition.ville_arrivee }}</dd></div>
+            <div class="detail-item"><dt>Transporteur</dt><dd>{{ offre.transporteur.raison_sociale }}</dd></div>
+            <div class="detail-item"><dt>Véhicule</dt><dd>{{ offre.vehicule.immatriculation }}</dd></div>
+            <div class="detail-item"><dt>Prix</dt><dd>{{ offre.prix }} DT</dd></div>
+            <div class="detail-item"><dt>Délai</dt><dd>{{ offre.delai_jours }} jour(s)</dd></div>
+            <div class="detail-item"><dt>Statut</dt><dd>{{ offre.get_statut_display }}</dd></div>
+            <div class="detail-item"><dt>Date de proposition</dt><dd>{{ offre.date_proposition|date:"d/m/Y" }}</dd></div>
+        </dl>
+        <footer class="actions">
+            <a class="button back-link" href="{% url 'offre_list' %}">Retour à la liste</a>
+            {% if user.is_staff %}
+                <a class="button edit-button" href="{% url 'offre_update' offre.pk %}">Modifier</a>
+                <form method="post" action="{% url 'offre_delete' offre.pk %}"
+                      onsubmit="return confirm('Supprimer cette offre ?');">
+                    {% csrf_token %}
+                    <button class="button delete-button" type="submit">Supprimer</button>
+                </form>
+            {% endif %}
+        </footer>
+    </main>
+</body>
+</html>
