@@ -130,3 +130,6 @@ MAILERS = {
     },
 }
 AUTH_USER_MODEL = "EntrepriseApp.Utilisateur"
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'expedition:expedition_list'
+LOGOUT_REDIRECT_URL = 'login'

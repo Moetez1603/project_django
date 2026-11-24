@@ -1,0 +1,24 @@
+<header class="main-header">
+  <div class="header-actions">
+    <a href="/admin/" class="btn-pill btn-glass">
+      Administration
+    </a>
+
+    <a href="{% url 'expedition:expedition_create' %}" class="btn-pill btn-primary-amber">
+      Nouvelle expédition
+    </a>
+
+    {% if user.is_authenticated %}
+      <form action="{% url 'logout' %}" class="btn-pill btn-glass" method="post">
+        {% csrf_token %}
+        <button type="submit">
+          Logout
+        </button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}" class="btn-pill btn-glass">
+        Login
+      </a>
+    {% endif %}
+  </div>
+</header>
